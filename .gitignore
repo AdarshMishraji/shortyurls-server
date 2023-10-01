@@ -1,0 +1,4 @@
+.env
+go.sum
+config/firebase.config.json
+*.fiber.gz
