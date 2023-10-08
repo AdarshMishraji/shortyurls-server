@@ -17,7 +17,7 @@ func Redirect(ctx *fiber.Ctx) error {
 
 	if url, err := redirect(urlAlias, ctx.IP(), string(ctx.Context().UserAgent()), ctx.UserContext(), ctx.Render); err != nil {
 		if err == fiber.ErrNotFound {
-			return ctx.Render("not-found", fiber.Map{
+			return ctx.Render("404", fiber.Map{
 				"FrontendURL": os.Getenv("FRONTEND_URL"),
 			})
 		} else {

@@ -16,16 +16,19 @@ import (
 
 func HandleRoutes() {
 	port := os.Getenv("PORT")
-	engine := mustache.New("./web/views", ".mustache")
+	engine := mustache.New("./views", ".mustache")
+
 	session.InitSession()
 
 	app := fiber.New(fiber.Config{
 		Views: engine,
 	})
 
+	app.Use(middlewares.HandleError)
+
 	app.Use(compress.New())
 
-	app.Static("/static", "./web/static", fiber.Static{
+	app.Static("/statics", "./statics", fiber.Static{
 		Compress: true,
 	})
 
