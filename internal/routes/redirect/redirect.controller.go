@@ -34,18 +34,23 @@ func redirect(
 		}
 		return "", fiber.ErrInternalServerError
 	} else {
-		if !existingURL.ExpirationTime.IsZero() && existingURL.ExpirationTime.Before(time.Now().UTC()) {
+		expirationTime := existingURL.ExpirationTime
+		if expirationTime != nil && !(*expirationTime).IsZero() && (*expirationTime).Before(time.Now().UTC()) {
 			return "", fiber.ErrNotFound
 		}
-
-		if existingURL.Password != nil || *(existingURL.Password) != "" {
+		password := existingURL.Password
+		if password != nil && *password != "" {
 			if encryptedPayload, err := redirectUtils.GenerateSignature(existingURL.ID.String()); err != nil {
 				return "", fiber.ErrInternalServerError
 			} else {
-				return "", render("password-entry", fiber.Map{
+				err := render("password-entry", fiber.Map{
 					"Signature": encryptedPayload,
 					"BaseURL":   os.Getenv("SELF_URL"),
-				}).(*fiber.Error)
+				})
+				if err != nil {
+					return "", fiber.ErrInternalServerError
+				}
+				return "", nil
 			}
 		} else {
 			locationInfo := utils.GetLocationInfoFromContext(ctx)

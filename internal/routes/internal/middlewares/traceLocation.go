@@ -13,15 +13,16 @@ func TraceLocation(ctx *fiber.Ctx) error {
 		return err
 	}
 	cachedLocation := session.Get("location")
+	ip := ctx.IP()
 	if cachedLocation == nil {
-		ip := ctx.IP()
 		location := utils.SetLocationInfoToContext(ctx, &ip, nil)
 		session.Set("location", location)
 		if err := session.Save(); err != nil {
 			return err
 		}
 	} else {
-		utils.SetLocationInfoToContext(ctx, nil, cachedLocation.(*utils.LocationInfo))
+		cachedLocation := cachedLocation.(utils.LocationInfo)
+		utils.SetLocationInfoToContext(ctx, &ip, &cachedLocation)
 	}
 
 	return ctx.Next()

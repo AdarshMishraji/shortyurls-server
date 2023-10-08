@@ -35,7 +35,7 @@ func ConnectDB() {
 		log.Fatal(err)
 	}
 
-	Migrate()
+	// Migrate()
 	fmt.Println("Connected to database")
 }
 

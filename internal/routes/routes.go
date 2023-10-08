@@ -7,6 +7,7 @@ import (
 	"shorty-urls-server/internal/routes/internal/session"
 	"shorty-urls-server/internal/routes/redirect"
 	"shorty-urls-server/internal/routes/url"
+	"shorty-urls-server/internal/routes/urls"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/compress"
@@ -35,8 +36,8 @@ func HandleRoutes() {
 
 	app.Route("/urls", func(router fiber.Router) {
 		router.Use(middlewares.ValidateToken)
-		router.Get("/")     // get all urls
-		router.Get("/meta") // get all urls meta data
+		router.Get("/", urls.GetAllUrls)  // get all urls
+		router.Get("/meta", urls.GetMeta) // get all urls meta data
 	})
 
 	app.Route("/url", func(router fiber.Router) {

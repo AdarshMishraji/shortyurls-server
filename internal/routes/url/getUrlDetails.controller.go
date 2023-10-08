@@ -22,7 +22,7 @@ func getUrlDetails(urlId string, userId string, ctx context.Context) (*utils.Url
 		return nil, fiber.ErrInternalServerError
 	}
 
-	response, err := utils.GetUrlDetails(urlDetails, ctx)
+	response, err := utils.GetUrlDetails(urlDetails, true, ctx)
 	if err != nil {
 		return nil, fiber.ErrInternalServerError
 	}

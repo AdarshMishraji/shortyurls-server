@@ -13,15 +13,16 @@ func TraceDevice(ctx *fiber.Ctx) error {
 		return err
 	}
 	cachedDevice := session.Get("device")
+	userAgent := string(ctx.Context().UserAgent())
 	if cachedDevice == nil {
-		userAgent := string(ctx.Context().UserAgent())
 		device := utils.SetDeviceInfoToContext(ctx, &userAgent, nil)
 		session.Set("device", device)
 		if err := session.Save(); err != nil {
 			return err
 		}
 	} else {
-		utils.SetDeviceInfoToContext(ctx, nil, cachedDevice.(*utils.DeviceInfo))
+		cachedDevice := cachedDevice.(utils.DeviceInfo)
+		utils.SetDeviceInfoToContext(ctx, &userAgent, &cachedDevice)
 	}
 
 	return ctx.Next()

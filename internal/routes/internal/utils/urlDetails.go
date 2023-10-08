@@ -22,7 +22,7 @@ type UrlMetaData struct {
 }
 
 type UrlDetailsResponse struct {
-	Meta UrlMetaData `json:"meta"`
+	Meta *UrlMetaData `json:"meta,omitempty"`
 	database.ShortenURL
 }
 
@@ -34,7 +34,6 @@ type UrlVisitData struct {
 
 type DateData struct {
 	Count int
-	Days  map[int]int
 }
 
 type MonthData struct {
@@ -52,7 +51,20 @@ type CountryData struct {
 	City  map[string]int
 }
 
-func GetUrlDetails(urlDetails UrlDetails, ctx context.Context) (*UrlDetailsResponse, error) {
+func GetUrlDetails(urlDetails UrlDetails, withMeta bool, ctx context.Context) (*UrlDetailsResponse, error) {
+	response := &UrlDetailsResponse{
+		ShortenURL: database.ShortenURL{
+			OriginalURL: urlDetails.OriginalURL,
+			Alias:       urlDetails.Alias,
+			IsActive:    urlDetails.IsActive,
+			IsDeleted:   urlDetails.IsDeleted,
+		},
+	}
+
+	if urlDetails.Visits == nil || !withMeta {
+		return response, nil
+	}
+
 	visits := []UrlVisitData{}
 
 	if err := json.Unmarshal(urlDetails.Visits, &visits); err != nil {
@@ -85,11 +97,11 @@ func GetUrlDetails(urlDetails UrlDetails, ctx context.Context) (*UrlDetailsRespo
 		deviceInfo := visits[i].Device
 		locationInfo := visits[i].Location
 
-		osName := deviceInfo.OsName           // os_name
-		deviceType := deviceInfo.DeviceType   // device_type
-		browserName := deviceInfo.BrowserName // client_name
-		country := locationInfo.Country       // country_name
-		city := locationInfo.City             // city_name
+		osName := deviceInfo.OsName
+		deviceType := deviceInfo.DeviceType
+		browserName := deviceInfo.BrowserName
+		country := locationInfo.Country
+		city := locationInfo.City
 
 		if _yearData, ok := yearMonthDayClicks[year]; ok {
 			_yearData.Count++
@@ -117,7 +129,6 @@ func GetUrlDetails(urlDetails UrlDetails, ctx context.Context) (*UrlDetailsRespo
 		} else {
 			yearMonthDayClicks[year].Months[month].Dates[day] = DateData{
 				Count: 1,
-				Days:  make(map[int]int),
 			}
 		}
 
@@ -163,21 +174,13 @@ func GetUrlDetails(urlDetails UrlDetails, ctx context.Context) (*UrlDetailsRespo
 		}
 	}
 
-	response := UrlDetailsResponse{
-		Meta: UrlMetaData{
-			YearMonthDayClicks: yearMonthDayClicks,
-			BrowserClicks:      browserClicks,
-			OsClicks:           osClicks,
-			DeviceClicks:       deviceClicks,
-			CountryClicks:      countryClicks,
-		},
-		ShortenURL: database.ShortenURL{
-			OriginalURL: urlDetails.OriginalURL,
-			Alias:       urlDetails.Alias,
-			IsActive:    urlDetails.IsActive,
-			IsDeleted:   urlDetails.IsDeleted,
-		},
+	response.Meta = &UrlMetaData{
+		YearMonthDayClicks: yearMonthDayClicks,
+		BrowserClicks:      browserClicks,
+		OsClicks:           osClicks,
+		DeviceClicks:       deviceClicks,
+		CountryClicks:      countryClicks,
 	}
 
-	return &response, nil
+	return response, nil
 }
