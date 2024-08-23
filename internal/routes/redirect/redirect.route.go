@@ -14,8 +14,8 @@ type PasswordCheckBody struct {
 
 func Redirect(ctx *fiber.Ctx) error {
 	urlAlias := ctx.Params("urlAlias")
-
-	if url, err := redirect(urlAlias, ctx.IP(), string(ctx.Context().UserAgent()), ctx.UserContext(), ctx.Render); err != nil {
+	ip := ctx.Get("Cf-Connecting-Ip")
+	if url, err := redirect(urlAlias, ip, string(ctx.Context().UserAgent()), ctx.UserContext(), ctx.Render); err != nil {
 		if err == fiber.ErrNotFound {
 			return ctx.Render("404", fiber.Map{
 				"FrontendURL": os.Getenv("FRONTEND_URL"),
@@ -42,8 +42,9 @@ func PasswordCheck(ctx *fiber.Ctx) error {
 	if body.Password == "" || body.Signature == "" {
 		return fiber.ErrBadRequest
 	}
+	ip := ctx.Get("Cf-Connecting-Ip")
 
-	if originalUrl, err := passwordCheck(body.Password, body.Signature, ctx.IP(), string(ctx.Context().UserAgent()), ctx.UserContext()); err != nil {
+	if originalUrl, err := passwordCheck(body.Password, body.Signature, ip, string(ctx.Context().UserAgent()), ctx.UserContext()); err != nil {
 		return err
 	} else {
 		return utils.Response{

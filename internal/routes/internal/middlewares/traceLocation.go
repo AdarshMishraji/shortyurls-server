@@ -16,7 +16,7 @@ func TraceLocation(ctx *fiber.Ctx) error {
 		return err
 	}
 	cachedLocation := session.Get("location")
-	ip := ctx.IP()
+	ip := ctx.Get("Cf-Connecting-Ip")
 	if cachedLocation == nil {
 		location := utils.SetLocationInfoToContext(ctx, &ip, nil)
 		session.Set("location", location)
