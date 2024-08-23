@@ -32,9 +32,6 @@ func HandleRoutes() {
 		Compress: true,
 	})
 
-	app.Use(middlewares.TraceLocation)
-	app.Use(middlewares.TraceDevice)
-
 	app.Post("/authenticate", authenticate.Authenticate)
 
 	app.Route("/urls", func(router fiber.Router) {
@@ -59,7 +56,6 @@ func HandleRoutes() {
 				router.Delete("/", url.RemovePassword) // remove password
 			})
 		})
-
 		router.Post("/", url.GenerateShortenURL) // create shorten url
 	})
 

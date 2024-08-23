@@ -2,6 +2,7 @@ package redirect
 
 import (
 	"os"
+	"shorty-urls-server/internal/routes/internal/middlewares"
 	"shorty-urls-server/internal/routes/internal/utils"
 
 	"github.com/gofiber/fiber/v2"
@@ -13,6 +14,8 @@ type PasswordCheckBody struct {
 }
 
 func Redirect(ctx *fiber.Ctx) error {
+	middlewares.TraceLocation(ctx)
+	middlewares.TraceDevice(ctx)
 	urlAlias := ctx.Params("urlAlias")
 	ip := ctx.Get("Cf-Connecting-Ip")
 	if url, err := redirect(urlAlias, ip, string(ctx.Context().UserAgent()), ctx.UserContext(), ctx.Render); err != nil {
