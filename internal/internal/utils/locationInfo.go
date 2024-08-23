@@ -49,7 +49,7 @@ func (info *LocationInfo) String() string {
 }
 
 func GetLocationInfo(ip string) LocationInfo {
-	rootUrl := fmt.Sprintf("https://ip-api.com/json/%s?fields=continent,continentCode,country,countryCode,region,regionName,city,zip,lat,lon,timezone,offset,currency", ip)
+	rootUrl := fmt.Sprintf("https://ip-api.com/json/", ip)
 
 	req, err := http.NewRequest("GET", rootUrl, nil)
 	if err != nil {
