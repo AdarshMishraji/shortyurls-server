@@ -9,6 +9,7 @@ import (
 )
 
 func TraceLocation(ctx *fiber.Ctx) error {
+	fmt.Println(ctx.Request().Header.String(), ctx.IP(), ctx.Get("X-Forwarded-For"), ctx.IPs())
 	session, err := session.SessionStore.Get(ctx)
 	if err != nil {
 		fmt.Println(err)
