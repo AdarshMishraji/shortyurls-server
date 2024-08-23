@@ -3,6 +3,7 @@ package url
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"os"
 	"shorty-urls-server/internal/database"
 	"shorty-urls-server/internal/routes/internal/utils"
@@ -12,7 +13,8 @@ import (
 	"gorm.io/gorm/clause"
 )
 
-func generateShortenURL(url string, userId string, ctx context.Context) (string, *fiber.Error) {
+func generateShortenURL(url string, ctx context.Context) (string, *fiber.Error) {
+	fmt.Println(url)
 	if url == "" {
 		return "", fiber.ErrBadRequest
 	}
@@ -39,25 +41,28 @@ func generateShortenURL(url string, userId string, ctx context.Context) (string,
 
 			metaData, err := json.Marshal(meta)
 			if err != nil {
+				fmt.Println(err)
 				return "", fiber.ErrInternalServerError
 			}
-			userUUID := uuid.MustParse(userId)
+			// userUUID := uuid.MustParse(userId)
 			shortenURLDataToInsert := database.ShortenURL{
 				OriginalURL: &url,
 				Alias:       &alias,
-				UserID:      &userUUID,
-				Meta:        metaData,
+				// UserID:      &userUUID,
+				Meta: metaData,
 			}
 
 			if err := database.DB.WithContext(ctx).Clauses(clause.Returning{
 				Columns: []clause.Column{{Name: "alias"}},
 			}).Create(&shortenURLDataToInsert).Scan(&shortenURLDataToInsert).Error; err != nil {
+				fmt.Println(err)
 				return "", fiber.ErrInternalServerError
 			} else {
 				shortenedUrl := os.Getenv("SELF_URL") + "/" + *(shortenURLDataToInsert.Alias)
 				return shortenedUrl, nil
 			}
 		} else {
+			fmt.Println(err)
 			return "", fiber.ErrInternalServerError
 		}
 	}

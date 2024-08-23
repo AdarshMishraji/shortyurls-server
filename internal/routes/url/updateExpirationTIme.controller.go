@@ -27,12 +27,12 @@ func updateExpirationTime(
 	if date.Before(time.Now()) {
 		return fiber.ErrBadRequest
 	}
-	userUUID := uuid.MustParse(userId)
+	// userUUID := uuid.MustParse(userId)
 	urlUUID := uuid.MustParse(urlId)
 
 	if tx := database.DB.Model(&database.ShortenURL{}).Where(&database.ShortenURL{
-		ID:        &urlUUID,
-		UserID:    &userUUID,
+		ID: &urlUUID,
+		// UserID:    &userUUID,
 		IsDeleted: false,
 	}).Updates(map[string]interface{}{
 		"expiration_time": date,

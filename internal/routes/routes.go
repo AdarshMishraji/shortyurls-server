@@ -44,7 +44,7 @@ func HandleRoutes() {
 	})
 
 	app.Route("/url", func(router fiber.Router) {
-		router.Use(middlewares.ValidateToken)
+		// router.Use(middlewares.ValidateToken)
 
 		router.Route("/:urlId", func(router fiber.Router) { // manage url
 			router.Get("/", url.GetURLDetails)         // get url data with statistics

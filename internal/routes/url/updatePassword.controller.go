@@ -26,12 +26,12 @@ func updatePassword(
 	if hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost); err != nil {
 		return fiber.ErrInternalServerError
 	} else {
-		userUUID := uuid.MustParse(userId)
+		// userUUID := uuid.MustParse(userId)
 		urlUUID := uuid.MustParse(urlId)
 
 		if tx := database.DB.Model(&database.ShortenURL{}).Where(&database.ShortenURL{
-			ID:        &urlUUID,
-			UserID:    &userUUID,
+			ID: &urlUUID,
+			// UserID:    &userUUID,
 			IsDeleted: false,
 		}).Updates(map[string]interface{}{
 			"password": hashedPassword,

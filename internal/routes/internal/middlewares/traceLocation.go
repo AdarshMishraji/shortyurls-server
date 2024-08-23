@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"fmt"
 	"shorty-urls-server/internal/internal/utils"
 	"shorty-urls-server/internal/routes/internal/session"
 
@@ -10,6 +11,7 @@ import (
 func TraceLocation(ctx *fiber.Ctx) error {
 	session, err := session.SessionStore.Get(ctx)
 	if err != nil {
+		fmt.Println(err)
 		return err
 	}
 	cachedLocation := session.Get("location")
@@ -18,6 +20,7 @@ func TraceLocation(ctx *fiber.Ctx) error {
 		location := utils.SetLocationInfoToContext(ctx, &ip, nil)
 		session.Set("location", location)
 		if err := session.Save(); err != nil {
+			fmt.Println(err)
 			return err
 		}
 	} else {

@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"fmt"
 	"shorty-urls-server/internal/internal/utils"
 	"shorty-urls-server/internal/routes/internal/session"
 
@@ -10,6 +11,7 @@ import (
 func TraceDevice(ctx *fiber.Ctx) error {
 	session, err := session.SessionStore.Get(ctx)
 	if err != nil {
+		fmt.Println(err)
 		return err
 	}
 	cachedDevice := session.Get("device")
@@ -18,6 +20,7 @@ func TraceDevice(ctx *fiber.Ctx) error {
 		device := utils.SetDeviceInfoToContext(ctx, &userAgent, nil)
 		session.Set("device", device)
 		if err := session.Save(); err != nil {
+			fmt.Println(err)
 			return err
 		}
 	} else {

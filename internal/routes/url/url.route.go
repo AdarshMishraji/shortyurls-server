@@ -1,6 +1,7 @@
 package url
 
 import (
+	"fmt"
 	commonUtils "shorty-urls-server/internal/internal/utils"
 	utils "shorty-urls-server/internal/routes/internal/utils"
 
@@ -33,7 +34,7 @@ func getURLRouteInput[T any](ctx *fiber.Ctx, containsURL bool, containsBody bool
 		urlId = ctx.Params("urlId")
 	}
 
-	user := utils.GetClaimFromContext(ctx)
+	// user := utils.GetClaimFromContext(ctx)
 
 	var requestBody *T
 
@@ -48,16 +49,18 @@ func getURLRouteInput[T any](ctx *fiber.Ctx, containsURL bool, containsBody bool
 		}
 	}
 
-	return urlId, user, requestBody, nil
+	return urlId, nil, requestBody, nil
 }
 
 func GenerateShortenURL(ctx *fiber.Ctx) error {
-	_, user, requestBody, err := getURLRouteInput[generateShortenURLRequestBody](ctx, false, true)
+	_, _, requestBody, err := getURLRouteInput[generateShortenURLRequestBody](ctx, false, true)
 	if err != nil {
+		fmt.Println(err)
 		return err
 	}
 
-	if shortenedUrl, err := generateShortenURL(requestBody.Url, user.UserId, ctx.UserContext()); err != nil {
+	if shortenedUrl, err := generateShortenURL(requestBody.Url, ctx.UserContext()); err != nil {
+		fmt.Println(err)
 		return err
 	} else {
 		return utils.Response{

@@ -14,12 +14,12 @@ func updateStatus(
 	isActive bool,
 	ctx context.Context,
 ) *fiber.Error {
-	userUUID := uuid.MustParse(userId)
+	// userUUID := uuid.MustParse(userId)
 	urlUUID := uuid.MustParse(urlId)
 
 	if tx := database.DB.Model(&database.ShortenURL{}).Where(&database.ShortenURL{
-		ID:        &urlUUID,
-		UserID:    &userUUID,
+		ID: &urlUUID,
+		// UserID:    &userUUID,
 		IsDeleted: false,
 		IsActive:  !isActive,
 	}).Updates(map[string]interface{}{
