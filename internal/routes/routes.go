@@ -66,5 +66,5 @@ func HandleRoutes() {
 	app.Post("/password-check", redirect.PasswordCheck)
 	app.Get("/:urlAlias", redirect.Redirect)
 
-	app.Listen("127.0.0.1:" + port)
+	app.Listen("0.0.0.0:" + port)
 }
